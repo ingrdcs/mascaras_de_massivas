@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Máscara de Massivo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>Máscara de Massivo</h1>
+  <p class="sub">Anexa a(s) foto(s) do alarme — a máscara já sai pronta, editável. Usa a API gratuita do Gemini (<a href="https://aistudio.google.com/apikey" target="_blank">pegar chave grátis</a>).</p>
+
+  <div class="card">
+    <h2>Chave da API do Gemini</h2>
+    <div class="keyrow">
+      <input type="password" id="apiKey" placeholder="Cole aqui sua chave grátis do Google AI Studio">
+      <span class="savedtag" id="savedTag" style="display:none;"><span class="dot"></span>salva</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Tipo de máscara</h2>
+    <div class="typeToggle">
+      <label class="typeOpt active" id="optSemSinal">
+        <input type="radio" name="maskType" value="semSinal" checked>
+        CTO sem sinal
+      </label>
+      <label class="typeOpt" id="optDegradada">
+        <input type="radio" name="maskType" value="degradada">
+        CTO degradada
+      </label>
+      <label class="typeOpt" id="optAbrangencia">
+        <input type="radio" name="maskType" value="abrangencia">
+        Grande abrangência
+      </label>
+    </div>
+  </div>
+
+  <!-- Upload: CTO SEM SINAL (múltiplas fotos genéricas) -->
+  <div class="card" id="uploadCardSemSinal">
+    <h2>Fotos do alarme</h2>
+    <div class="drop" id="drop">
+      <div class="icon">📎</div>
+      <div class="txt">Clique ou arraste a(s) foto(s) aqui</div>
+      <div class="txt2">PNG ou JPG — uma por Pon, se for o caso</div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <div class="filelist" id="fileList"></div>
+
+    <button class="primary" id="readBtnSemSinal" disabled>Gerar máscara</button>
+    <div class="status" id="statusSemSinal"></div>
+  </div>
+
+  <!-- Upload: CTO DEGRADADA (três prints com papéis diferentes) -->
+  <div class="card hidden" id="uploadCardDegradada">
+    <h2>Prints do caso</h2>
+
+    <div class="slot">
+      <div class="slotLabel">Print do U2000</div>
+      <div class="slotHint">mostra a OLT, Placa e Pon</div>
+      <div class="slotDrop" id="slotDropU2000">Clique ou arraste aqui</div>
+      <input type="file" id="slotFileU2000" accept="image/*">
+      <div class="fileitem slotFile" id="slotPreviewU2000">
+        <img id="slotImgU2000"><span class="name" id="slotNameU2000"></span>
+        <button class="clear" id="slotClearU2000">remover</button>
+      </div>
+    </div>
+
+    <div class="slot">
+      <div class="slotLabel">Print do "busca caixa"</div>
+      <div class="slotHint">mostra a caixa (CTO), potência de validação e a média de sinal dela</div>
+      <div class="slotDrop" id="slotDropBusca">Clique ou arraste aqui</div>
+      <input type="file" id="slotFileBusca" accept="image/*">
+      <div class="fileitem slotFile" id="slotPreviewBusca">
+        <img id="slotImgBusca"><span class="name" id="slotNameBusca"></span>
+        <button class="clear" id="slotClearBusca">remover</button>
+      </div>
+    </div>
+
+    <div class="slot">
+      <div class="slotLabel">Print do power meter (técnico)</div>
+      <div class="slotHint">usado pra pegar o endereço do local</div>
+      <div class="slotDrop" id="slotDropPower">Clique ou arraste aqui</div>
+      <input type="file" id="slotFilePower" accept="image/*">
+      <div class="fileitem slotFile" id="slotPreviewPower">
+        <img id="slotImgPower"><span class="name" id="slotNamePower"></span>
+        <button class="clear" id="slotClearPower">remover</button>
+      </div>
+    </div>
+
+    <p class="note">A média de sinal da pon (mínimo/máximo) não vem de nenhum print — sai em branco pra você preencher direto na máscara.</p>
+    <button class="primary" id="readBtnDegradada" disabled>Gerar máscara</button>
+    <div class="status" id="statusDegradada"></div>
+  </div>
+
+  <!-- Upload: MASSIVA GRANDE ABRANGÊNCIA -->
+  <div class="card hidden" id="uploadCardAbrangencia">
+    <h2>Prints da tabela de portas (Frame/Slot/Port)</h2>
+    <p class="note">Mapeia só as linhas em vermelho ("Offline, with ONU") — as roxas ("Offline, without ONU") são ignoradas.</p>
+    <div class="drop" id="dropAbr">
+      <div class="icon">📎</div>
+      <div class="txt">Clique ou arraste o(s) print(s) aqui</div>
+      <div class="txt2">PNG ou JPG — pode mandar mais de um print da mesma tabela</div>
+    </div>
+    <input type="file" id="fileInputAbr" accept="image/*" multiple>
+    <div class="filelist" id="fileListAbr"></div>
+
+    <button class="primary" id="readBtnAbrangencia" disabled>Gerar máscara</button>
+    <div class="status" id="statusAbrangencia"></div>
+  </div>
+
+  <div class="card hidden" id="resultCard">
+    <h2>Máscara pronta — edite direto aqui se precisar</h2>
+    <textarea id="resultText" class="resultArea"></textarea>
+    <div class="actions">
+      <button class="secondary" id="copyBtn">Copiar</button>
+      <button class="secondary" id="newBtn">Novo alarme</button>
+    </div>
+  </div>
+
+  <footer class="footer">&copy; 2026 Ingrid Silva. Todos os direitos reservados.</footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
